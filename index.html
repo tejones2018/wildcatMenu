@@ -10,9 +10,9 @@
 
   <h4 class="text-bold px-16 pt-12 pb-4 ng-binding ng-scope" ng-if="current < $ctrl.currentLimit">Main Line</h4>
   <ul style="list-style-type:circle;">
-  <li>Protein</li>
-  <li>Vegetable</li>
-  <li>Carb</li>
+  <li class="text-md ng-binding" ng-bind-html="event.title">Protein</li>
+  <li class="text-md ng-binding" ng-bind-html="event.title">Vegetable</li>
+  <li class="text-md ng-binding" ng-bind-html="event.title">Carb</li>
 </ul>
   <h4 class="text-bold px-16 pt-12 pb-4 ng-binding ng-scope" ng-if="current < $ctrl.currentLimit">Custom Bar</h4>
   <h4 class="text-bold px-16 pt-12 pb-4 ng-binding ng-scope" ng-if="current < $ctrl.currentLimit">Grill Line</h4>
