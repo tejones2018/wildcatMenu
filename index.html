@@ -1,22 +1,16 @@
-
 <!DOCTYPE html>
 <html>
 <head>
- <link rel="stylesheet" href="https://davidson.ucroo.org/styles/main.css">
+<link rel="stylesheet" href="https://davidson.ucroo.org/styles/main.css">
 <link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i" rel="stylesheet">
-<title>Page Title</title>
+<title>Vail Commons Daily Menu - Davidson College</title>
 </head>
 <body style="background-color:#ffffff;">
-
-  <h4 class="text-bold px-16 pt-12 pb-4 ng-binding ng-scope" ng-if="current < $ctrl.currentLimit">Main Line</h4>
-  <ul style="list-style-type:circle;">
-  <li class="text-md ng-binding" ng-bind-html="event.title">Protein</li>
-  <li class="text-md ng-binding" ng-bind-html="event.title">Vegetable</li>
-  <li class="text-md ng-binding" ng-bind-html="event.title">Carb</li>
-</ul>
-  <h4 class="text-bold px-16 pt-12 pb-4 ng-binding ng-scope" ng-if="current < $ctrl.currentLimit">Custom Bar</h4>
-  <h4 class="text-bold px-16 pt-12 pb-4 ng-binding ng-scope" ng-if="current < $ctrl.currentLimit">Grill Line</h4>
-  <h4 class="text-bold px-16 pt-12 pb-4 ng-binding ng-scope" ng-if="current < $ctrl.currentLimit">Dessert Line</h4>
-  
+  <div id="main"></div>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
+  <script type="text/javascript" src="main.js"></script>
+  <script type="text/javascript">
+    window.addEventListener('DOMContentLoaded', init(renderToday))
+  </script>
 </body>
 </html>
