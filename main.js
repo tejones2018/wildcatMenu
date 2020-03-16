@@ -44,13 +44,7 @@ var groupBy = function (arr, criteria) {
   }, {});
 };
 
-function renderToday (data) {
-  var date = new Date();
-  var day = date.getDate();
-  var weekday = weekdayArray[date.getDay()];
-  var month = monthArray[date.getMonth()];
-  // var todayString = weekday + ', ' + month + ' ' + getOrdinal(day);
-
+function groupWeekdayMenus(data, weekday) {
   var groupedByStation = groupBy(data[weekday].elements, 'station_name');
   var menuData = Object.keys(groupedByStation).map(function(key) {
     return {
@@ -58,8 +52,13 @@ function renderToday (data) {
       menus: groupBy(groupedByStation[key], 'time of day')
     };
   });
+  return menuData;
+}
 
-  console.log(menuData);
+function renderToday (data) {
+  var date = new Date();
+  var weekday = weekdayArray[date.getDay()];
+  var menuData = groupWeekdayMenus(data, weekday);
   var menuHtml = dailyMenuHtml(menuData);
   var body = document.getElementById('main');
   body.innerHTML = menuHtml;
@@ -82,6 +81,72 @@ function dailyMenuHtml (menuData) {
       text += '</ul>';
     })
   });
+  return text;
+}
+
+
+function renderWeekly (data) {
+  var date = new Date();
+  var today = weekdayArray[date.getDay()];
+
+  var weekdayMenus = Object.keys(data).map(function(sheetName) {
+    if (weekdayArray.indexOf(sheetName) > -1) {
+      return {
+        day: sheetName,
+        index: weekdayArray.indexOf(sheetName),
+        stations: groupWeekdayMenus(data, sheetName)
+      }
+    } else {
+      return false;
+    }
+  }).filter(function(menuData) {
+    return menuData !== false;
+  }).sort(function(a, b) {
+    return a.index > b.index ? 1 : -1;
+  });
+  // console.log(weekdayMenus);
+
+  var weeklyHtml = weekdayMenus.map(function(menuData) {
+    return weeklyMenuHtml(menuData);
+  }).join('');
+
+  document.getElementById('weeklyMenuTabContent').innerHTML = weeklyHtml;
+
+  var navTabHtml = weekdayArray.map(function(day) {
+    var active = today === day;
+    return '<li class="nav-item">' +
+      '<a class="nav-link ' + (active ? 'active' : '') + '" id="' + day + '-tab" data-toggle="tab" href="#' + day + 'Menu" role="tab" ' +
+        'aria-controls="' + day + 'Menu" ' + (active ? 'aria-selected="true"' : '') + '>' + day + '</a>' +
+      '</li>'
+  }).join('');
+
+  document.getElementById('weeklyMenuTabs').innerHTML = navTabHtml;
+}
+
+function weeklyMenuHtml(data){
+  var date = new Date();
+  var active = date.getDay() === data.index;
+  var text = '<div class="tab-pane fade ' + (active ? 'show active' : '') + '" id="' + data.day + 'Menu" role="tabpanel" aria-labelledby="' + data.day+ '-tab">';
+  text += '<div class="row"><div class="col text-center p-3"><p class="h4">' + data.day + '</p></div></div>';
+  text += '<div class="row">';
+
+  data.stations.forEach(function(station) {
+    text += '<div class="col-12 col-sm-6 col-lg-4 pt-3"><div class="card"><div class="card-header">' + station.name + '</div><div class="card-body">';
+    Object.keys(station.menus).forEach(function(timeOfDay) {
+      if (timeOfDay !== 'All Day') {
+        text += '<p class="h5 cart-title">' + timeOfDay + '</p>';
+      }
+      text += '<ul class="list-unstyled">';
+      station.menus[timeOfDay].forEach(function(data) {
+        text += '<li style="font-style: italic">' + data.dish + '</li>';
+      });
+      text += '</ul>';
+    });
+    text += '</div></div></div>';
+  });
+
+  text += '</div></div>';
+
   return text;
 }
 
