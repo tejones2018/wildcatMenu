@@ -55,20 +55,41 @@ function groupWeekdayMenus(data, weekday) {
   return menuData;
 }
 
+function getSpecials(data, weekday) {
+  return data['Specials'].elements.filter(function(special) {
+    return special['Day'] === weekday;
+  })[0];
+}
+
 function renderToday (data) {
   var date = new Date();
   var weekday = weekdayArray[date.getDay()];
   var menuData = groupWeekdayMenus(data, weekday);
-  var menuHtml = dailyMenuHtml(menuData);
+  var specials = getSpecials(data, weekday);
+  var menuHtml = dailyMenuHtml(menuData, specials);
   var body = document.getElementById('main');
   body.innerHTML = menuHtml;
 }
 
-function dailyMenuHtml (menuData) {
+function dailyMenuHtml (menuData, specials) {
   var text = '';
 
+  if (specials) {
+    text += '<p class="text-primary text-lg px-16 pt-12 pb-4">Specials</p>';
+    text += '<p class="text-bold px-16 pt-12 pb-4">Union Cafe</p>';
+    text += '<ul style="list-style-type:circle;">';
+    text += '<li class="text-md" style="font-style: italic">' + specials['Union Cafe'] + '</li>';
+    text += '</ul>';
+
+    text += '<p class="text-bold px-16 pt-12 pb-4">Wildcat Den</p>';
+    text += '<ul style="list-style-type:circle;">';
+    text += '<li class="text-md" style="font-style: italic">' + specials['Wildcat Den'] + '</li>';
+    text += '</ul>';
+  }
+
+  text += '<p class="text-primary text-lg px-16 pt-12 pb-4">Vail Commons</p>';
   menuData.forEach(function(station) {
-    text += '<h4 class="text-bold px-16 pt-12 pb-4">' + station.name + '</h4>';
+    text += '<p class="text-bold px-16 pt-12 pb-4">' + station.name + '</p>';
     Object.keys(station.menus).forEach(function(timeOfDay) {
       text += '<ul style="list-style-type:circle;">';
       if (timeOfDay !== 'All Day') {
@@ -81,6 +102,7 @@ function dailyMenuHtml (menuData) {
       text += '</ul>';
     })
   });
+
   return text;
 }
 
@@ -107,7 +129,8 @@ function renderWeekly (data) {
   // console.log(weekdayMenus);
 
   var weeklyHtml = weekdayMenus.map(function(menuData) {
-    return weeklyMenuHtml(menuData);
+    var specials = getSpecials(data, menuData.day);
+    return weeklyMenuHtml(menuData, specials);
   }).join('');
 
   document.getElementById('weeklyMenuTabContent').innerHTML = weeklyHtml;
@@ -123,11 +146,16 @@ function renderWeekly (data) {
   document.getElementById('weeklyMenuTabs').innerHTML = navTabHtml;
 }
 
-function weeklyMenuHtml(data){
+function weeklyMenuHtml(data, specials){
   var date = new Date();
   var active = date.getDay() === data.index;
   var text = '<div class="tab-pane fade ' + (active ? 'show active' : '') + '" id="' + data.day + 'Menu" role="tabpanel" aria-labelledby="' + data.day+ '-tab">';
-  text += '<div class="row"><div class="col text-center p-3"><p class="h4">' + data.day + '</p></div></div>';
+  text += '<div class="row"><div class="col text-center p-3"><p class="h3">' + data.day + '</p></div></div>';
+  text += '<div class="row justify-content-around">';
+    text += '<div class="col-12 col-sm-6 col-md-4 col-lg-2 text-center p-3"><p class="h5">Union Cafe Special</p><p>' + specials['Union Cafe'] + '</p></div>';
+    text += '<div class="col-12 col-sm-6 col-md-4 col-lg-2 text-center p-3"><p class="h5">Wildcat Den Special</p><p>' + specials['Wildcat Den'] + '</p></div>';
+  text += '</div>';
+  text += '<div class="row"><div class="col text-center p-3"><p class="h4">Vail Commons</p></div></div>';
   text += '<div class="row">';
 
   data.stations.forEach(function(station) {
